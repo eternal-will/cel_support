@@ -13,6 +13,8 @@ exports.createUser = async (req, res) => {
       name: req.body.name,
       email: req.body.email,
       password: req.body.password,
+      department: req.body.department,
+      mobile: req.body.mobile || "",
     });
 
     const token = generateToken();
@@ -22,8 +24,8 @@ exports.createUser = async (req, res) => {
       token: token,
     });
 
-    await verificationToken.save();
     await user.save();
+    await verificationToken.save();
 
     maitTransport().sendMail({
       from: "otpverification@email.com",
@@ -52,6 +54,11 @@ exports.loginUser = async (req, res) => {
           id: user._id,
           name: user.name,
           email: user.email,
+          department: user.department,
+          mobile: user.mobile,
+          isAdmin: user.isAdmin,
+          isVerified: user.isVerified,
+          createdAt: user.createdAt,
         },
         "secretkey", //store it in .env file in actual projects
         { expiresIn: "14d" }, //expires in 14 days
@@ -169,6 +176,68 @@ exports.resetPassword = async (req, res) => {
     });
 
     res.json({ status: "ok", message: "Password reset successful!" });
+  } catch (error) {
+    res.json({ status: "error", error: error.toString() });
+  }
+};
+
+exports.changePassword = async (req, res) => {
+  try {
+    const { userId, oldPassword, password } = req.body;
+
+    const user = await User.findById(userId);
+    if (!user) throw new Error("User not found!");
+
+    if (await user.comparePassword(oldPassword)) {
+      if (await user.comparePassword(password))
+        throw new Error("New password can't be same as old one!");
+
+      user.password = password;
+      await user.save();
+
+      res.json({ status: "ok", message: "Password changed successfully!" });
+    }
+  } catch (error) {
+    res.json({ status: "error", error: error.toString() });
+  }
+};
+
+exports.getUsers = async (req, res) => {
+  try {
+    const { userId } = req.body;
+
+    const user = await User.findById(userId);
+    if (!user.isAdmin) throw new Error("Insufficient Authority!");
+
+    const userList = await User.find({});
+    res.json({ status: "ok", userList: userList });
+  } catch (error) {
+    res.json({ status: "error", error: error.toString() });
+  }
+};
+
+exports.getUser = async (req, res) => {
+  try {
+    const { userId } = req.body;
+
+    const user = await User.findById(userId);
+    if (!user) throw new Error("User not found!");
+
+    res.json({ status: "ok", user: user });
+  } catch (error) {
+    res.json({ status: "error", error: error.toString() });
+  }
+};
+
+exports.deleteUser = async (req, res) => {
+  try {
+    const { userId, userToDeleteId } = req.body;
+
+    const user = await User.findById(userId);
+    if (!user.isAdmin) throw new Error("Insufficient Authority!");
+
+    await User.findByIdAndDelete(userToDeleteId);
+    res.json({ status: "ok", message: "User deleted successfully!" });
   } catch (error) {
     res.json({ status: "error", error: error.toString() });
   }

@@ -6,6 +6,10 @@ const {
   verifyEmail,
   forgotPassword,
   resetPassword,
+  changePassword,
+  getUsers,
+  getUser,
+  deleteUser,
 } = require("../controllers/user");
 
 const { isResetTokenValid } = require("../middlewares/tokenValidator");
@@ -26,5 +30,9 @@ router.post(
   validate,
   resetPassword
 );
+router.post("/change-password", validateNewPassword, validate, changePassword);
+router.post("/get-users", getUsers);
+router.post("/get-user", getUser);
+router.post("/delete-user", deleteUser);
 
 module.exports = router;

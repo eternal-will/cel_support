@@ -12,6 +12,14 @@ const User = mongoose.Schema(
       required: true,
       unique: true,
     },
+    department: {
+      type: String,
+      required: true,
+    },
+    mobile: {
+      type: String,
+      required: false,
+    },
     password: {
       type: String,
       required: true,
@@ -25,6 +33,10 @@ const User = mongoose.Schema(
       type: Boolean,
       default: false,
       required: true,
+    },
+    createdAt: {
+      type: Date,
+      default: Date.now(),
     },
   },
   { collection: "user-data" }

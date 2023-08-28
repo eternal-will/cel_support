@@ -1,5 +1,7 @@
 import { useState } from "react";
 
+import AppWrap from "../wrapper/AppWrap";
+
 function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -18,7 +20,7 @@ function Login() {
       localStorage.setItem("token", data.user);
       window.location.href = "/dashboard";
     } else {
-      alert("Please check your username and password");
+      alert("Please check your email and password");
     }
   }
 
@@ -42,8 +44,9 @@ function Login() {
         <br />
         <button type="submit">Login</button>
       </form>
+      <a href="/register">Register</a>
     </div>
   );
 }
 
-export default Login;
+export default AppWrap(Login, "login");
