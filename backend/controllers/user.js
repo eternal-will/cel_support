@@ -90,8 +90,10 @@ exports.verifyEmail = async (req, res) => {
     const { userId, otp } = req.body;
 
     const user = await User.findById(userId);
+    if (!user) throw new Error("User not found!");
 
     const token = await VerificationToken.findOne({ owner: userId });
+    if (!token) throw new Error("OTP expired! Request a new one.");
 
     if (await token.compareToken(otp)) {
       user.isVerified = true;
@@ -110,6 +112,34 @@ exports.verifyEmail = async (req, res) => {
     } else {
       return res.json({ status: "error", error: "Invalid OTP" });
     }
+  } catch (error) {
+    return res.json({ status: "error", error: error.toString() });
+  }
+};
+
+exports.resendOTP = async (req, res) => {
+  try {
+    const { userId } = req.body;
+    const token = generateToken();
+
+    const user = User.findById(userId);
+    if (!user) throw new Error("User not found!");
+
+    const verificationToken = new VerificationToken({
+      owner: userId,
+      token: token,
+    });
+
+    await verificationToken.save();
+
+    maitTransport().sendMail({
+      from: "otpverification@email.com",
+      to: user.email,
+      subject: "Email Verification",
+      html: `<h1>OTP: ${token}</h1>`,
+    });
+
+    return res.json({ status: "ok", message: "OTP sent to your email" });
   } catch (error) {
     return res.json({ status: "error", error: error.toString() });
   }
@@ -135,7 +165,7 @@ exports.forgotPassword = async (req, res) => {
     const resetToken = new ResetToken({ owner: user._id, token: token });
     await resetToken.save();
 
-    resetUrl = `http://localhost:3000/reset-password?token=${token}&userId=${user._id}`;
+    resetUrl = `http://localhost:3000/reset-password?token=${token}&uid=${user._id}`;
 
     maitTransport().sendMail({
       from: "passwordreset@email.com",

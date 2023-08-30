@@ -2,8 +2,6 @@ import React, { useEffect } from "react";
 import jwt_decode from "jwt-decode";
 import { useNavigate } from "react-router-dom";
 
-import AppWrap from "../../wrapper/AppWrap";
-
 const Dashboard = () => {
   const [user, setUser] = React.useState({});
 
@@ -23,6 +21,9 @@ const Dashboard = () => {
         localStorage.removeItem("token");
         navigate("/login", { replace: true });
       }
+      if (!user.isVerified) {
+        navigate("/verify-email", { replace: true });
+      }
     } else {
       navigate("/login", { replace: true });
     }
@@ -36,4 +37,4 @@ const Dashboard = () => {
   );
 };
 
-export default AppWrap(Dashboard, "dashboard");
+export default Dashboard;

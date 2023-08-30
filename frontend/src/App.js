@@ -1,6 +1,13 @@
 import React from "react";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
-import { Register, Login, Dashboard } from "./containers";
+import {
+  Register,
+  Login,
+  Dashboard,
+  ForgotPassword,
+  ResetPassword,
+  VerifyEmail,
+} from "./containers";
 import jwt_decode from "jwt-decode";
 
 const App = () => {
@@ -33,6 +40,9 @@ const App = () => {
           <Route path="/register" element={<Register />} />
           <Route path="/login" element={<Login />} />
           <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/forgot-password" element={<ForgotPassword />} />
+          <Route path="/reset-password" element={<ResetPassword />} />
+          <Route path="/verify-email" element={<VerifyEmail />} />
         </Routes>
       </BrowserRouter>
     </div>

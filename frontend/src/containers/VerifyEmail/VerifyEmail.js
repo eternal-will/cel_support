@@ -1,4 +1,5 @@
 import * as React from "react";
+import { useState, useEffect } from "react";
 import Avatar from "@mui/material/Avatar";
 import Button from "@mui/material/Button";
 import CssBaseline from "@mui/material/CssBaseline";
@@ -10,9 +11,10 @@ import Grid from "@mui/material/Grid";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import Typography from "@mui/material/Typography";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
+import jwt_decode from "jwt-decode";
 
 import { Images } from "../../assets";
-import { login } from "../../API";
+import { verifyEmail, resendOTP } from "../../API";
 
 function Copyright(props) {
   return (
@@ -36,29 +38,100 @@ function Copyright(props) {
 
 const defaultTheme = createTheme();
 
-export default function Login() {
+export default function VerifyEmail() {
+  const [userId, setUserId] = useState("");
+
+  const handleNewOTPRequest = async (e) => {
+    e.preventDefault();
+
+    const data = await resendOTP(userId);
+
+    if (data.status === "ok") {
+      alert("Request sent! Please check your email");
+    } else {
+      alert(`Request FAILED! ${data.error}`);
+    }
+  };
+
   const handleSubmit = async (event) => {
     event.preventDefault();
 
     const formInput = new FormData(event.currentTarget);
 
-    const email = formInput.get("email");
-    const password = formInput.get("password");
+    const otp = formInput.get("otp");
 
-    const data = await login(email, password);
+    const data = await verifyEmail(userId, otp);
 
-    if (data.token) {
-      localStorage.setItem("token", data.token);
-      window.location.href = "/dashboard";
+    if (data.status === "ok") {
+      alert("Email verified!");
+      localStorage.removeItem("token");
+      window.location.href = "/login";
     } else {
-      alert("Login FAILED! Please check your email and password");
+      alert(`Request FAILED! ${data.error}`);
     }
   };
+
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (token) {
+      const user = jwt_decode(token);
+      setUserId(user.id);
+    } else {
+      window.location.href = "/login";
+    }
+  }, []);
 
   return (
     <ThemeProvider theme={defaultTheme}>
       <Grid container component="main" sx={{ height: "100vh" }}>
         <CssBaseline />
+
+        <Grid item xs={12} sm={8} md={5} component={Paper} elevation={6} square>
+          <Box
+            sx={{
+              my: 8,
+              mx: 4,
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+            }}
+          >
+            <Avatar sx={{ m: 1, bgcolor: "secondary.main" }}>
+              <LockOutlinedIcon />
+            </Avatar>
+            <Typography component="h1" variant="h5">
+              Enter One Time Password (OTP)
+            </Typography>
+            <Box component="form" onSubmit={handleSubmit} sx={{ mt: 1 }}>
+              <TextField
+                margin="normal"
+                required
+                fullWidth
+                type="text"
+                id="otp"
+                label="Enter Your OTP"
+                name="otp"
+                autoFocus
+              />
+              <Button
+                type="submit"
+                fullWidth
+                variant="contained"
+                sx={{ mt: 3, mb: 2 }}
+              >
+                Verify Email
+              </Button>
+              <Grid container>
+                <Grid item xs>
+                  <Link href="#" variant="body2" onClick={handleNewOTPRequest}>
+                    Request a new OTP
+                  </Link>
+                </Grid>
+              </Grid>
+              <Copyright sx={{ mt: 5 }} />
+            </Box>
+          </Box>
+        </Grid>
         <Grid
           item
           xs={false}
@@ -75,68 +148,6 @@ export default function Login() {
             backgroundPosition: "center",
           }}
         />
-        <Grid item xs={12} sm={8} md={5} component={Paper} elevation={6} square>
-          <Box
-            sx={{
-              my: 8,
-              mx: 4,
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "center",
-            }}
-          >
-            <Avatar sx={{ m: 1, bgcolor: "secondary.main" }}>
-              <LockOutlinedIcon />
-            </Avatar>
-            <Typography component="h1" variant="h5">
-              Sign in
-            </Typography>
-            <Box component="form" onSubmit={handleSubmit} sx={{ mt: 1 }}>
-              <TextField
-                margin="normal"
-                required
-                fullWidth
-                type="email"
-                id="email"
-                label="Email Address"
-                name="email"
-                autoComplete="email"
-                autoFocus
-              />
-              <TextField
-                margin="normal"
-                required
-                fullWidth
-                name="password"
-                label="Password"
-                type="password"
-                id="password"
-                autoComplete="current-password"
-              />
-              <Button
-                type="submit"
-                fullWidth
-                variant="contained"
-                sx={{ mt: 3, mb: 2 }}
-              >
-                Sign In
-              </Button>
-              <Grid container>
-                <Grid item xs>
-                  <Link href="/forgot-password" variant="body2">
-                    Forgot password?
-                  </Link>
-                </Grid>
-                <Grid item>
-                  <Link href="/register" variant="body2">
-                    {"Don't have an account? Sign Up"}
-                  </Link>
-                </Grid>
-              </Grid>
-              <Copyright sx={{ mt: 5 }} />
-            </Box>
-          </Box>
-        </Grid>
       </Grid>
     </ThemeProvider>
   );

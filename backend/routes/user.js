@@ -10,6 +10,7 @@ const {
   getUsers,
   getUser,
   deleteUser,
+  resendOTP,
 } = require("../controllers/user");
 
 const { isResetTokenValid } = require("../middlewares/tokenValidator");
@@ -22,6 +23,7 @@ const {
 router.post("/create", validateUser, validate, createUser);
 router.post("/login", loginUser);
 router.post("/verify-email", verifyEmail);
+router.post("/resend-otp", resendOTP);
 router.post("/forgot-password", forgotPassword);
 router.post(
   "/reset-password",
