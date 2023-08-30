@@ -46,18 +46,34 @@ exports.getComplaint = async (req, res) => {
   }
 };
 
+exports.openComplaint = async (req, res) => {
+  try {
+    const { complaintId, adminId } = req.body;
+
+    const complaint = Complaint.findById(complaintId);
+    if (!complaint) throw new Error("No complaint found with given id!");
+
+    complaint.status = "open";
+    complaint.adminId = adminId;
+    await complaint.save();
+
+    res.json({
+      status: "ok",
+      message: "Complaint opened successfully!",
+      complaint,
+    });
+  } catch (error) {
+    res.json({ status: "error", error: error.toString() });
+  }
+};
+
 exports.editComplaint = async (req, res) => {
   try {
-    const complaint = getComplaintById(req.body.complaintId);
+    const complaint = Complaint.findById(req.body.complaintId);
     if (!complaint) throw new Error("No complaint found with given id!");
 
     if (complaint.status !== "pending")
-      throw new Error("Complaint is already resolved!");
-
-    if (complaint.adminId)
-      throw new Error(
-        "Complaint is already assigned to an admin, it can no longer be edited!"
-      );
+      throw new Error("Complaint can no longer be edited!");
 
     complaint.title = req.body.title;
     complaint.description = req.body.description;

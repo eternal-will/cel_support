@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-import AppWrap from "../wrapper/AppWrap";
+import AppWrap from "../../wrapper/AppWrap";
+import { register } from "../../API";
 
 function Register() {
   const navigate = useNavigate();
@@ -11,14 +12,10 @@ function Register() {
   const [department, setDepartment] = useState("");
   const [mobile, setMobile] = useState("");
 
-  async function registerUser(e) {
+  const registerUser = async (e) => {
     e.preventDefault();
-    const response = await fetch("http://localhost:1377/api/user/create", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ name, email, password, department, mobile }),
-    });
-    const data = await response.json();
+
+    const data = await register(name, email, department, mobile, password);
 
     if (data.status === "ok") {
       alert("Registration successful");
@@ -26,7 +23,7 @@ function Register() {
     } else {
       alert("Registration failed");
     }
-  }
+  };
 
   return (
     <div className="App">
