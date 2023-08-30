@@ -1,17 +1,18 @@
 const mongoose = require("mongoose");
 
-const feedbackSchema = new mongoose.Schema(
+const chatSchema = new mongoose.Schema(
   {
-    adminId: {
+    userId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "UserData",
       required: true,
     },
     complaintId: {
-      type: String,
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "ComplaintData",
       required: true,
     },
-    feedback: {
+    chat: {
       type: String,
       required: true,
     },
@@ -19,10 +20,14 @@ const feedbackSchema = new mongoose.Schema(
       type: Date,
       default: Date.now(),
     },
+    isDeleted: {
+      type: Boolean,
+      default: false,
+    },
   },
   {
-    collection: "feedback-data",
+    collection: "chat-data",
   }
 );
 
-module.exports = mongoose.model("FeedbackData", feedbackSchema);
+module.exports = mongoose.model("ChatData", chatSchema);

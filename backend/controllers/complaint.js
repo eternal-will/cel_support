@@ -51,6 +51,14 @@ exports.editComplaint = async (req, res) => {
     const complaint = getComplaintById(req.body.complaintId);
     if (!complaint) throw new Error("No complaint found with given id!");
 
+    if (complaint.status !== "pending")
+      throw new Error("Complaint is already resolved!");
+
+    if (complaint.adminId)
+      throw new Error(
+        "Complaint is already assigned to an admin, it can no longer be edited!"
+      );
+
     complaint.title = req.body.title;
     complaint.description = req.body.description;
     complaint.editedAt = Date.now();
@@ -71,6 +79,24 @@ exports.deleteComplaint = async (req, res) => {
     await complaint.remove();
 
     res.json({ status: "ok", message: "Complaint deleted successfully!" });
+  } catch (error) {
+    res.json({ status: "error", error: error.toString() });
+  }
+};
+
+exports.resolveComplaint = async (req, res) => {
+  try {
+    const complaint = await Complaint.findOne({ _id: req.body.complaintId });
+    if (!complaint) throw new Error("No complaint found with given id!");
+
+    complaint.feedback = req.body.feedback;
+    complaint.status = "resolved";
+    complaint.resolvedAt = Date.now();
+    await complaint.save();
+
+    await feedback.save();
+
+    res.json({ status: "ok", message: "Feedback created successfully!" });
   } catch (error) {
     res.json({ status: "error", error: error.toString() });
   }

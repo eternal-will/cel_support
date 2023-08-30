@@ -7,6 +7,11 @@ const complaintSchema = new mongoose.Schema(
       ref: "UserData",
       required: true,
     },
+    adminId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "UserData",
+      required: false,
+    },
     title: {
       type: String,
       required: true,
@@ -24,9 +29,17 @@ const complaintSchema = new mongoose.Schema(
       default: Date.now(),
       required: false,
     },
+    feedback: {
+      type: String,
+      required: false,
+    },
     status: {
       type: String,
       default: "pending",
+    },
+    resolvedAt: {
+      type: Date,
+      required: false,
     },
   },
   {
