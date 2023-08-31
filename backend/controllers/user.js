@@ -122,8 +122,11 @@ exports.resendOTP = async (req, res) => {
     const { userId } = req.body;
     const token = generateToken();
 
-    const user = User.findById(userId);
+    const user = await User.findById(userId);
     if (!user) throw new Error("User not found!");
+
+    const tokenExists = await VerificationToken.findOne({ owner: userId });
+    if (tokenExists) await VerificationToken.findByIdAndDelete(tokenExists._id);
 
     const verificationToken = new VerificationToken({
       owner: userId,

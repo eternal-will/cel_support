@@ -1,11 +1,11 @@
-const changePassword = async (userId, oldPassword, password) => {
+const getUserIssues = async (userId) => {
   try {
     const response = await fetch(
-      "http://localhost:1377/api/user/change-password",
+      "http://localhost:1377/api/complaint/get-complaints",
       {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ userId, oldPassword, password }),
+        body: JSON.stringify({ userId }),
       }
     );
     const data = await response.json();
@@ -15,4 +15,4 @@ const changePassword = async (userId, oldPassword, password) => {
   }
 };
 
-export default changePassword;
+export default getUserIssues;

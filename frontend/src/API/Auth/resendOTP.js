@@ -11,3 +11,5 @@ const resendOTP = async (userId) => {
     console.log(error);
   }
 };
+
+export default resendOTP;

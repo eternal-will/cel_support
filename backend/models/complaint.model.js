@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 
-const complaintSchema = new mongoose.Schema(
+const complaintSchema = mongoose.Schema(
   {
     userId: {
       type: mongoose.Schema.Types.ObjectId,

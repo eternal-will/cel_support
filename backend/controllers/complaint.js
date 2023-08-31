@@ -20,6 +20,18 @@ exports.createComplaint = async (req, res) => {
   }
 };
 
+exports.getAllComplaints = async (req, res) => {
+  try {
+    const user = await User.findById(req.body.userId);
+    if (!user.isAdmin) throw new Error("You are not authorised!");
+
+    const complaints = await Complaint.find();
+    res.json({ status: "ok", complaints });
+  } catch (error) {
+    res.json({ status: "error", error: error.toString() });
+  }
+};
+
 exports.getComplaints = async (req, res) => {
   try {
     const user = await User.findById(req.body.userId);
@@ -34,10 +46,10 @@ exports.getComplaints = async (req, res) => {
 
 exports.getComplaint = async (req, res) => {
   try {
-    const user = User.findById(req.body.userId);
+    const user = await User.findById(req.body.userId);
     if (!user) throw new Error("No user found with given id!");
 
-    const complaint = getComplaintById(req.body.complaintId);
+    const complaint = await Complaint.findById(req.body.complaintId);
     if (!complaint) throw new Error("No complaint found with given id!");
 
     res.json({ status: "ok", complaint });
@@ -50,8 +62,9 @@ exports.openComplaint = async (req, res) => {
   try {
     const { complaintId, adminId } = req.body;
 
-    const complaint = Complaint.findById(complaintId);
+    const complaint = await Complaint.findById(complaintId);
     if (!complaint) throw new Error("No complaint found with given id!");
+    console.log(complaint.title);
 
     complaint.status = "open";
     complaint.adminId = adminId;
@@ -67,32 +80,12 @@ exports.openComplaint = async (req, res) => {
   }
 };
 
-exports.editComplaint = async (req, res) => {
-  try {
-    const complaint = Complaint.findById(req.body.complaintId);
-    if (!complaint) throw new Error("No complaint found with given id!");
-
-    if (complaint.status !== "pending")
-      throw new Error("Complaint can no longer be edited!");
-
-    complaint.title = req.body.title;
-    complaint.description = req.body.description;
-    complaint.editedAt = Date.now();
-
-    await complaint.save();
-
-    res.json({ status: "ok", message: "Complaint edited successfully!" });
-  } catch (error) {
-    res.json({ status: "error", error: error.toString() });
-  }
-};
-
 exports.deleteComplaint = async (req, res) => {
   try {
-    const complaint = getComplaintById(req.body.complaintId);
+    const complaint = await Complaint.findById(req.body.Id);
     if (!complaint) throw new Error("No complaint found with given id!");
 
-    await complaint.remove();
+    await Complaint.findByIdAndDelete(req.body.Id);
 
     res.json({ status: "ok", message: "Complaint deleted successfully!" });
   } catch (error) {
