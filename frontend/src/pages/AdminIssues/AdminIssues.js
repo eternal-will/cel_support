@@ -18,7 +18,7 @@ import MarkEmailReadIcon from "@mui/icons-material/MarkEmailRead";
 import { IconButton } from "@mui/material";
 
 import IssueCard from "./ViewIssueCard/IssueCard";
-import ViewUserCard from "./ViewUserCard/ViewUserCard";
+import { getAllIssues, openIssue } from "../../API";
 
 function descendingComparator(a, b, orderBy) {
   if (b[orderBy] < a[orderBy]) {
@@ -120,8 +120,6 @@ export default function EnhancedTable(props) {
   const [cardData, setCardData] = React.useState({});
   const [userId, setUserId] = React.useState("");
   const [update, setUpdate] = React.useState("");
-  const [userCardState, setUserCardState] = React.useState(false);
-  const [userCardData, setCardUserData] = React.useState({});
 
   const cardOpenHandler = (data) => {
     setCardData(data);
@@ -131,6 +129,16 @@ export default function EnhancedTable(props) {
   const cardCloseHandler = () => {
     setCardData({});
     setCardState(false);
+  };
+
+  const issueOpenHandler = async (data) => {
+    const response = await openIssue(data._id, userId);
+    if (response.status === "ok") {
+      setUpdate(Math.random());
+    } else {
+      alert("Something went wrong!");
+      console.log(response);
+    }
   };
 
   const handleRequestSort = (event, property) => {
@@ -171,22 +179,33 @@ export default function EnhancedTable(props) {
 
       setUserId(user.id);
 
-      // const data = await getUserIssues(user.id);
-      // const issues = data.complaints;
+      const data = await getAllIssues(user.id);
+      const issues = data.complaints;
+      var issuesToShow = [];
 
-      // issues?.forEach((issue) => {
-      // issue.createdAt = new Date(issue.createdAt).toDateString();
-      // });
+      issues?.forEach((issue) => {
+        issue.createdAt = new Date(issue.createdAt).toDateString();
+      });
 
-      // if (props.currenttab === "All") {
-      // filteredIssues = issues;
-      // } else {
-      // issues?.forEach((issue) => {
-      // if (issue.status.toLowerCase() === props.currenttab.toLowerCase()) {
-      // filteredIssues.push(issue);
-      // }
-      // });
-      // }
+      issues?.forEach((issue) => {
+        if (issue.status === "open") {
+          if (issue.adminId === user.id) {
+            issuesToShow.push(issue);
+          }
+        } else {
+          issuesToShow.push(issue);
+        }
+      });
+
+      if (props.currenttab === "All") {
+        filteredIssues = issuesToShow;
+      } else {
+        issuesToShow?.forEach((issue) => {
+          if (issue.status.toLowerCase() === props.currenttab.toLowerCase()) {
+            filteredIssues.push(issue);
+          }
+        });
+      }
       setRows(filteredIssues);
       setLoading(false);
     };
@@ -200,11 +219,12 @@ export default function EnhancedTable(props) {
           update={() => {
             setUpdate(Math.random());
           }}
+          userid={userId}
           data={cardData}
           closecard={() => cardCloseHandler()}
-          // delete={() => deleteWarningHandler(cardData)}
         />
       )}
+
       {loading ? (
         <CircularProgress />
       ) : (
@@ -243,7 +263,7 @@ export default function EnhancedTable(props) {
                         {row.status === "pending" && (
                           <IconButton
                             aria-label="delete"
-                            // onClick={() => deleteWarningHandler(row)}
+                            onClick={() => issueOpenHandler(row)}
                           >
                             <MarkEmailReadIcon />
                           </IconButton>

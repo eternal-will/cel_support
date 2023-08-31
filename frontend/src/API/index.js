@@ -10,3 +10,7 @@ export { default as getUserIssues } from "./Issues/getUserIssues";
 export { default as deleteIssue } from "./Issues/deleteIssue";
 export { default as createIssue } from "./Issues/createIssue";
 export { default as resolveIssue } from "./Issues/resolveIssue";
+export { default as getAllIssues } from "./Issues/getAllIssues";
+export { default as openIssue } from "./Issues/openIssue";
+
+export { default as getUser } from "./Misc/getUser";

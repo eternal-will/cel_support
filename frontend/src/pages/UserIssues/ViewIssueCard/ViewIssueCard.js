@@ -44,8 +44,7 @@ export default function IssueCard(props) {
         <CardHeader title={props.data.title} subheader={props.data.createdAt} />
         <CardContent>
           <Typography variant="body2" color="text.secondary">
-            {props.data.description +
-              "lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quos."}
+            {props.data.description}
             <br /> {"Status: " + props.data.status}
           </Typography>
           {props.data.status === "open" && <Chat />}
