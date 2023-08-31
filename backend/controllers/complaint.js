@@ -64,7 +64,6 @@ exports.openComplaint = async (req, res) => {
 
     const complaint = await Complaint.findById(complaintId);
     if (!complaint) throw new Error("No complaint found with given id!");
-    console.log(complaint.title);
 
     complaint.status = "open";
     complaint.adminId = adminId;

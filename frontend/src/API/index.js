@@ -14,3 +14,5 @@ export { default as getAllIssues } from "./Issues/getAllIssues";
 export { default as openIssue } from "./Issues/openIssue";
 
 export { default as getUser } from "./Misc/getUser";
+export { default as getAllUser } from "./Misc/getAllUser";
+export { default as deleteUser } from "./Misc/deleteUser";
