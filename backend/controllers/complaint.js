@@ -95,17 +95,14 @@ exports.deleteComplaint = async (req, res) => {
 
 exports.resolveComplaint = async (req, res) => {
   try {
-    const complaint = await Complaint.findOne({ _id: req.body.complaintId });
+    const complaint = await Complaint.findById(req.body.Id);
     if (!complaint) throw new Error("No complaint found with given id!");
 
-    complaint.feedback = req.body.feedback;
     complaint.status = "resolved";
     complaint.resolvedAt = Date.now();
     await complaint.save();
 
-    await feedback.save();
-
-    res.json({ status: "ok", message: "Feedback created successfully!" });
+    res.json({ status: "ok", message: "Complaint marked as resolved!" });
   } catch (error) {
     res.json({ status: "error", error: error.toString() });
   }

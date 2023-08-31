@@ -15,11 +15,12 @@ import jwt_decode from "jwt-decode";
 import DeleteIcon from "@mui/icons-material/Delete";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import CircularProgress from "@mui/material/CircularProgress";
-import { IconButton } from "@mui/material";
+import { Button, IconButton } from "@mui/material";
 
 import { getUserIssues, deleteIssue } from "../../API";
 import IssueCard from "./ViewIssueCard/ViewIssueCard";
 import DeleteIssueWarning from "./DeleteIssueWarning/DeleteIssueWarning";
+import CreateIssueCard from "./CreateIssueCard/CreateIssueCard";
 
 function descendingComparator(a, b, orderBy) {
   if (b[orderBy] < a[orderBy]) {
@@ -121,6 +122,9 @@ export default function EnhancedTable(props) {
   const [cardData, setCardData] = React.useState({});
   const [deleteWarningState, setDeleteWarningState] = React.useState(false);
   const [deleteWarningData, setDeleteWarningData] = React.useState("");
+  const [createIssueState, setCreateIssueState] = React.useState(false);
+  const [userId, setUserId] = React.useState("");
+  const [update, setUpdate] = React.useState("");
 
   const cardOpenHandler = (data) => {
     setCardData(data);
@@ -185,6 +189,8 @@ export default function EnhancedTable(props) {
       const token = localStorage.getItem("token");
       const user = jwt_decode(token);
 
+      setUserId(user.id);
+
       const data = await getUserIssues(user.id);
       const issues = data.complaints;
 
@@ -205,12 +211,24 @@ export default function EnhancedTable(props) {
       setLoading(false);
     };
     issuethingy();
-  }, [props.currenttab]);
+  }, [props.currenttab, update]);
 
   return (
     <Box sx={{ width: "100%" }}>
+      {createIssueState && (
+        <CreateIssueCard
+          update={() => {
+            setUpdate(Math.random());
+          }}
+          userId={userId}
+          closecard={() => setCreateIssueState(false)}
+        />
+      )}
       {cardState && (
         <IssueCard
+          update={() => {
+            setUpdate(Math.random());
+          }}
           data={cardData}
           closecard={() => cardCloseHandler()}
           delete={() => deleteWarningHandler(cardData)}
@@ -222,6 +240,13 @@ export default function EnhancedTable(props) {
           delete={() => deleteIssueHandler(deleteWarningData)}
         />
       )}
+      <Button
+        variant="contained"
+        sx={{ mb: 2 }}
+        onClick={() => setCreateIssueState(true)}
+      >
+        Raise new Issue
+      </Button>
       {loading ? (
         <CircularProgress />
       ) : (
@@ -242,17 +267,11 @@ export default function EnhancedTable(props) {
                   const labelId = `enhanced-table-checkbox-${index}`;
 
                   return (
-                    <TableRow
-                      hover
-                      tabIndex={-1}
-                      key={row.name}
-                      sx={{ cursor: "pointer" }}
-                    >
+                    <TableRow hover tabIndex={-1} key={row.name}>
                       <TableCell
                         component="th"
                         id={labelId}
                         scope="row"
-                        padding="normal"
                         align="left"
                       >
                         {row.title}
@@ -261,9 +280,7 @@ export default function EnhancedTable(props) {
                       <TableCell align="left">{row.status}</TableCell>
                       <TableCell
                         align="center"
-                        sx={{
-                          justifyContent: "space-between",
-                        }}
+                        sx={{ justifyContent: "space-between" }}
                       >
                         {row.status === "pending" && (
                           <IconButton

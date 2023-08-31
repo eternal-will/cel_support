@@ -24,15 +24,6 @@ const complaintSchema = mongoose.Schema(
       type: Date,
       default: Date.now(),
     },
-    editedAt: {
-      type: Date,
-      default: Date.now(),
-      required: false,
-    },
-    feedback: {
-      type: String,
-      required: false,
-    },
     status: {
       type: String,
       default: "pending",

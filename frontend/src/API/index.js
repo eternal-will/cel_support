@@ -8,3 +8,5 @@ export { default as changePassword } from "./Auth/changePassword";
 
 export { default as getUserIssues } from "./Issues/getUserIssues";
 export { default as deleteIssue } from "./Issues/deleteIssue";
+export { default as createIssue } from "./Issues/createIssue";
+export { default as resolveIssue } from "./Issues/resolveIssue";

@@ -31,10 +31,15 @@ function Header(props) {
 
   return (
     <React.Fragment>
-      <AppBar color="primary" position="sticky" elevation={0}>
+      <AppBar
+        color="primary"
+        position="sticky"
+        sx={{ display: { sm: "none", xs: "block" } }}
+        elevation={0}
+      >
         <Toolbar>
           <Grid container spacing={1} alignItems="center">
-            <Grid sx={{ display: { sm: "none", xs: "block" } }} item>
+            <Grid item>
               <IconButton
                 color="inherit"
                 aria-label="open drawer"

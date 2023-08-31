@@ -8,8 +8,23 @@ import Typography from "@mui/material/Typography";
 import DeleteIcon from "@mui/icons-material/Delete";
 import CancelIcon from "@mui/icons-material/Cancel";
 import Backdrop from "@mui/material/Backdrop";
+import PlaylistAddCheckCircleIcon from "@mui/icons-material/PlaylistAddCheckCircle";
+
+import { resolveIssue } from "../../../API";
+import Chat from "./Chats/Chat";
 
 export default function IssueCard(props) {
+  const handleResolve = async () => {
+    console.log(props.data._id);
+    const data = await resolveIssue(props.data._id);
+    console.log(data);
+    if (data.status === "ok") {
+      props.closecard();
+      props.update();
+    } else {
+      console.log(data);
+    }
+  };
   return (
     <Backdrop
       sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
@@ -34,6 +49,7 @@ export default function IssueCard(props) {
               "lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quos."}
             <br /> {"Status: " + props.data.status}
           </Typography>
+          {props.data.status === "open" && <Chat />}
         </CardContent>
         <CardActions sx={{ justifyContent: "space-around" }}>
           {props.data.status === "pending" && (
@@ -44,6 +60,11 @@ export default function IssueCard(props) {
           <IconButton aria-label="close" onClick={props.closecard}>
             <CancelIcon />
           </IconButton>
+          {props.data.status === "open" && (
+            <IconButton aria-label="resolve" onClick={handleResolve}>
+              <PlaylistAddCheckCircleIcon />
+            </IconButton>
+          )}
         </CardActions>
       </Card>
     </Backdrop>

@@ -40,22 +40,3 @@ exports.getChats = async (req, res) => {
     res.json({ status: "error", error: error.toString() });
   }
 };
-
-exports.deleteChat = async (req, res) => {
-  try {
-    const { chatId, userId } = req.body;
-
-    const chat = await Chat.findById(chatId);
-    if (!chat) throw new Error("No chat found with given id!");
-
-    if (chat.userId.toString() !== userId)
-      throw new Error("You are not authorized to delete this chat!");
-
-    chat.isDeleted = true;
-    await chat.save();
-
-    res.json({ status: "ok", message: "Chat deleted successfully!" });
-  } catch (error) {
-    res.json({ status: "error", error: error.toString() });
-  }
-};
