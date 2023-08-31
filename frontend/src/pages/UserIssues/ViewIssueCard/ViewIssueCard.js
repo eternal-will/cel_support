@@ -29,7 +29,6 @@ export default function IssueCard(props) {
     <Backdrop
       sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
       open
-      onClick={props.closecard}
     >
       <Card
         sx={{

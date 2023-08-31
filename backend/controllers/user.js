@@ -221,15 +221,15 @@ exports.changePassword = async (req, res) => {
     const user = await User.findById(userId);
     if (!user) throw new Error("User not found!");
 
-    if (await user.comparePassword(oldPassword)) {
-      if (await user.comparePassword(password))
-        throw new Error("New password can't be same as old one!");
+    if (!(await user.comparePassword(oldPassword)))
+      throw new Error("Old password is incorrect!");
+    if (await user.comparePassword(password))
+      throw new Error("New password can't be same as old one!");
 
-      user.password = password;
-      await user.save();
+    user.password = password;
+    await user.save();
 
-      res.json({ status: "ok", message: "Password changed successfully!" });
-    }
+    res.json({ status: "ok", message: "Password changed successfully!" });
   } catch (error) {
     res.json({ status: "error", error: error.toString() });
   }
