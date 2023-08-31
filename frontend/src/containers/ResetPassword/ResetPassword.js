@@ -41,7 +41,7 @@ const defaultTheme = createTheme();
 
 export default function ResetPassword() {
   const [password, setPassword] = useState("");
-  const [searchParams, setSearchParams] = useSearchParams();
+  const [searchParams] = useSearchParams();
 
   const userId = searchParams.get("uid");
   const token = searchParams.get("token");

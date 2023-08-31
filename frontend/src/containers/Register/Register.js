@@ -59,9 +59,7 @@ export default function Register() {
     }
 
     if (mobile) {
-      if (
-        !mobile.match(/^(?:(?:\+|0{0,2})91(\s*[\-]\s*)?|[0]?)?[6789]\d{9}$/)
-      ) {
+      if (!mobile.match(/^(?:(?:\+|0{0,2})91(\s*[-]\s*)?|[0]?)?[6789]\d{9}$/)) {
         alert("Invalid mobile number");
         return;
       }

@@ -36,7 +36,7 @@ export default function IssueCard(props) {
       }
     };
     fetchUser();
-  }, []);
+  });
 
   return (
     <Backdrop
