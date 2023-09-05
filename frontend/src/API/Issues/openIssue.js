@@ -1,7 +1,7 @@
 const openIssue = async (complaintId, adminId) => {
   try {
     const response = await fetch(
-      "http://localhost:1377/api/complaint/open-complaint",
+      `${process.env.REACT_APP_BACKEND_URL}/api/complaint/open-complaint`,
       {
         method: "POST",
         headers: { "Content-Type": "application/json" },

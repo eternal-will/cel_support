@@ -21,8 +21,6 @@ export default function CreateIssueCard(props) {
     const description = formInput.get("description");
     const userId = props.userId;
 
-    console.log(title, description, userId);
-
     const data = await createIssue(userId, title, description);
 
     if (data.status === "ok") {

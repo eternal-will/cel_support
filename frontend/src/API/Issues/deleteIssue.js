@@ -1,7 +1,7 @@
 const deleteIssues = async (Id) => {
   try {
     const response = await fetch(
-      "http://localhost:1377/api/complaint/delete-complaint",
+      `${process.env.REACT_APP_BACKEND_URL}/api/complaint/delete-complaint`,
       {
         method: "POST",
         headers: { "Content-Type": "application/json" },

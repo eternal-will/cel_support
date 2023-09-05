@@ -229,8 +229,16 @@ export default function EnhancedTable(props) {
       {loading ? (
         <CircularProgress />
       ) : (
-        <Paper sx={{ width: "100%", mb: 2 }}>
-          <TableContainer>
+        <Paper
+          sx={{
+            width: "100%",
+            mb: 2,
+            overflow: "auto",
+          }}
+        >
+          <TableContainer
+            sx={{ width: "100%", display: "table", tableLayout: "fixed" }}
+          >
             <Table
               sx={{ minWidth: 750 }}
               aria-labelledby="tableTitle"

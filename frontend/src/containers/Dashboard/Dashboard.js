@@ -21,8 +21,8 @@ function Copyright() {
   return (
     <Typography variant="body2" color="text.secondary" align="center">
       {"Copyright © "}
-      <Link color="inherit" href="https://shswt.live/">
-        eternal-will
+      <Link color="inherit" href={process.env.REACT_APP_SITE_OWNER_URL}>
+        {process.env.REACT_APP_SITE_OWNER}
       </Link>{" "}
       {new Date().getFullYear()}.
     </Typography>

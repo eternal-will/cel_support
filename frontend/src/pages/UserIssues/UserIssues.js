@@ -52,6 +52,10 @@ function stableSort(array, comparator) {
 
 const headCells = [
   {
+    id: "issueNo",
+    label: "Issue No.",
+  },
+  {
     id: "title",
     label: "Title",
   },
@@ -112,8 +116,8 @@ EnhancedTableHead.propTypes = {
 };
 
 export default function EnhancedTable(props) {
-  const [order, setOrder] = React.useState("asc");
-  const [orderBy, setOrderBy] = React.useState("title");
+  const [order, setOrder] = React.useState("desc");
+  const [orderBy, setOrderBy] = React.useState("issueNo");
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
   const [rows, setRows] = React.useState([]);
@@ -195,7 +199,11 @@ export default function EnhancedTable(props) {
       const issues = data.complaints;
 
       issues?.forEach((issue) => {
-        issue.createdAt = new Date(issue.createdAt).toDateString();
+        issue.createdAt = new Date(issue.createdAt).toString().split("GMT")[0];
+        if (issue.resolvedAt)
+          issue.resolvedAt = new Date(issue.resolvedAt)
+            .toString()
+            .split("GMT")[0];
       });
 
       if (props.currenttab === "All") {
@@ -250,8 +258,16 @@ export default function EnhancedTable(props) {
       {loading ? (
         <CircularProgress />
       ) : (
-        <Paper sx={{ width: "100%", mb: 2 }}>
-          <TableContainer>
+        <Paper
+          sx={{
+            width: "100%",
+            mb: 2,
+            overflow: "auto",
+          }}
+        >
+          <TableContainer
+            sx={{ width: "100%", display: "table", tableLayout: "fixed" }}
+          >
             <Table
               sx={{ minWidth: 750 }}
               aria-labelledby="tableTitle"
@@ -274,8 +290,9 @@ export default function EnhancedTable(props) {
                         scope="row"
                         align="left"
                       >
-                        {row.title}
+                        {row.issueNo}
                       </TableCell>
+                      <TableCell align="left">{row.title}</TableCell>
                       <TableCell align="left">{row.createdAt}</TableCell>
                       <TableCell align="left">{row.status}</TableCell>
                       <TableCell

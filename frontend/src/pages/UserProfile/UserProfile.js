@@ -73,7 +73,7 @@ const UserProfile = () => {
       <Card>
         <CardHeader
           title={user.name}
-          subheader={user.department + " - " + user.email}
+          subheader={user.department + " - " + user.email + ` (${user.mobile})`}
         />
       </Card>
       <br />
@@ -104,15 +104,12 @@ const UserProfile = () => {
                   <TextField
                     fullWidth
                     label="Enter New Password"
+                    helperText="Minimum 8 characters, 1 uppercase, 1 lowercase, 1 number, 1 special character"
                     name="password"
                     onChange={handleChange}
                     type="password"
                     required
                     value={values.password}
-                  />
-                  <PasswordStrengthBar
-                    password={values.password}
-                    minLength={8}
                   />
                 </Grid>
                 <Grid xs={12} md={6}>
@@ -124,6 +121,10 @@ const UserProfile = () => {
                     type="password"
                     required
                     value={values.rePassword}
+                  />
+                  <PasswordStrengthBar
+                    password={values.password}
+                    minLength={8}
                   />
                 </Grid>
               </Grid>

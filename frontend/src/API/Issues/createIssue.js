@@ -1,7 +1,7 @@
 const createIssue = async (userId, title, description) => {
   try {
     const response = await fetch(
-      "http://localhost:1377/api/complaint/create-complaint",
+      `${process.env.REACT_APP_BACKEND_URL}/api/complaint/create-complaint`,
       {
         method: "POST",
         headers: { "Content-Type": "application/json" },

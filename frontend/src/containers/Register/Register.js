@@ -25,8 +25,8 @@ function Copyright(props) {
       {...props}
     >
       {"Copyright © "}
-      <Link color="inherit" href="https://shswt.live/">
-        eternal-will
+      <Link color="inherit" href={process.env.REACT_APP_SITE_OWNER_URL}>
+        {process.env.REACT_APP_SITE_OWNER}
       </Link>{" "}
       {new Date().getFullYear()}
       {"."}
@@ -158,6 +158,7 @@ export default function Register() {
                   <TextField
                     required
                     fullWidth
+                    helperText="Minimum 8 characters, 1 uppercase, 1 lowercase, 1 number, 1 special character"
                     name="password"
                     label="Password"
                     type="password"
@@ -165,7 +166,6 @@ export default function Register() {
                     autoComplete="new-password"
                     onChange={(e) => setPassword(e.target.value)}
                   />
-                  <PasswordStrengthBar password={password} minLength={8} />
                 </Grid>
                 <Grid item xs={12} sm={6}>
                   <TextField
@@ -177,6 +177,7 @@ export default function Register() {
                     id="re-password"
                     autoComplete="new-password"
                   />
+                  <PasswordStrengthBar password={password} minLength={8} />
                 </Grid>
               </Grid>
               <Button

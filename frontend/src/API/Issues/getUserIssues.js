@@ -1,7 +1,7 @@
 const getUserIssues = async (userId) => {
   try {
     const response = await fetch(
-      "http://localhost:1377/api/complaint/get-complaints",
+      `${process.env.REACT_APP_BACKEND_URL}/api/complaint/get-complaints`,
       {
         method: "POST",
         headers: { "Content-Type": "application/json" },

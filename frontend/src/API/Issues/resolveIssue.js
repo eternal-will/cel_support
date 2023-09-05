@@ -1,11 +1,11 @@
-const deleteIssues = async (Id) => {
+const deleteIssues = async (Id, feedback) => {
   try {
     const response = await fetch(
-      "http://localhost:1377/api/complaint/resolve-complaint",
+      `${process.env.REACT_APP_BACKEND_URL}/api/complaint/resolve-complaint`,
       {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ Id }),
+        body: JSON.stringify({ Id, feedback }),
       }
     );
     const data = await response.json();

@@ -1,7 +1,7 @@
 const changePassword = async (userId, oldPassword, password) => {
   try {
     const response = await fetch(
-      "http://localhost:1377/api/user/change-password",
+      `${process.env.REACT_APP_BACKEND_URL}/api/user/change-password`,
       {
         method: "POST",
         headers: { "Content-Type": "application/json" },

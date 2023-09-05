@@ -10,10 +10,11 @@ import {
   TextField,
   Unstable_Grid2 as Grid,
 } from "@mui/material";
+import Typography from "@mui/material/Typography";
 import PasswordStrengthBar from "react-password-strength-bar";
 import jwt_decode from "jwt-decode";
 
-import { changePassword } from "../../API";
+import { changePassword, getAllIssues } from "../../API";
 
 const AdminProfile = () => {
   const [values, setValues] = useState({
@@ -23,6 +24,11 @@ const AdminProfile = () => {
   });
 
   const [user, setUser] = useState({});
+
+  const [stats, setStats] = useState({
+    open: 0,
+    resolved: 0,
+  });
 
   const handleChange = useCallback((event) => {
     setValues((prevState) => ({
@@ -66,6 +72,26 @@ const AdminProfile = () => {
     const token = localStorage.getItem("token");
     const decoded = jwt_decode(token);
     setUser(decoded);
+
+    const fetchData = async () => {
+      const data = await getAllIssues(decoded.id);
+      if (data.status === "ok") {
+        const open = data.complaints.filter(
+          (issue) => issue.status === "open" && issue.adminId === decoded.id
+        );
+        const resolved = data.complaints.filter(
+          (issue) => issue.status === "resolved" && issue.adminId === decoded.id
+        );
+        setStats({
+          open: open.length,
+          resolved: resolved.length,
+        });
+      } else {
+        console.log(data);
+        alert(data.error[0].msg || data.error);
+      }
+    };
+    fetchData();
   }, []);
 
   return (
@@ -73,9 +99,18 @@ const AdminProfile = () => {
       <Card>
         <CardHeader
           title={user.name}
-          subheader={user.department + " - " + user.email}
+          subheader={user.department + " - " + user.email + ` (${user.mobile})`}
         />
+        <CardContent>
+          <Typography variant="body2" color="text.secondary">
+            Currently Open Issues: {stats.open}
+            <br />
+            Total Issues Resolved: {stats.resolved}
+          </Typography>
+        </CardContent>
       </Card>
+      <br />
+
       <br />
       <form
         autoComplete="off"
@@ -104,15 +139,12 @@ const AdminProfile = () => {
                   <TextField
                     fullWidth
                     label="Enter New Password"
+                    helperText="Minimum 8 characters, 1 uppercase, 1 lowercase, 1 number, 1 special character"
                     name="password"
                     onChange={handleChange}
                     type="password"
                     required
                     value={values.password}
-                  />
-                  <PasswordStrengthBar
-                    password={values.password}
-                    minLength={8}
                   />
                 </Grid>
                 <Grid xs={12} md={6}>
@@ -124,6 +156,10 @@ const AdminProfile = () => {
                     type="password"
                     required
                     value={values.rePassword}
+                  />
+                  <PasswordStrengthBar
+                    password={values.password}
+                    minLength={8}
                   />
                 </Grid>
               </Grid>

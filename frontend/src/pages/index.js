@@ -1,5 +1,3 @@
-export { default as Content } from "./sample";
-
 export { default as UserIssues } from "./UserIssues/UserIssues";
 export { default as UserProfile } from "./UserProfile/UserProfile";
 export { default as UserList } from "./UserList/UserList";

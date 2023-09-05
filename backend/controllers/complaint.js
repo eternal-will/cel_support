@@ -1,15 +1,20 @@
 const Complaint = require("../models/complaint.model");
 const User = require("../models/user.model");
+require("dotenv").config();
 
 exports.createComplaint = async (req, res) => {
   try {
     const user = await User.findById(req.body.userId);
     if (!user) throw new Error("No user found with given id!");
 
+    const complaints = await Complaint.find({});
+    const count = complaints.slice(-1).issueNo || 1000;
+
     const complaint = new Complaint({
       userId: req.body.userId,
       title: req.body.title,
       description: req.body.description,
+      issueNo: count + 1,
     });
 
     await complaint.save();
@@ -99,6 +104,7 @@ exports.resolveComplaint = async (req, res) => {
 
     complaint.status = "resolved";
     complaint.resolvedAt = Date.now();
+    complaint.feedback = req.body.feedback;
     await complaint.save();
 
     res.json({ status: "ok", message: "Complaint marked as resolved!" });

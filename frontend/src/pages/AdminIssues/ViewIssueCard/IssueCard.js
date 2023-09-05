@@ -9,15 +9,31 @@ import Typography from "@mui/material/Typography";
 import CancelIcon from "@mui/icons-material/Cancel";
 import Backdrop from "@mui/material/Backdrop";
 import MarkEmailReadIcon from "@mui/icons-material/MarkEmailRead";
+import PlaylistAddCheckCircleIcon from "@mui/icons-material/PlaylistAddCheckCircle";
+import { Button, TextField } from "@mui/material";
 
-import { openIssue, getUser } from "../../../API";
-import Chat from "./Chat/Chat";
+import { openIssue, getUser, resolveIssue } from "../../../API";
 
 export default function IssueCard(props) {
   const [user, setUser] = useState({});
+  const [feedback, setFeedback] = useState("");
+
+  const handleOpen = async () => {
+    const data = await openIssue(props.data._id, props.userid);
+    if (data.status === "ok") {
+      props.closecard();
+      props.update();
+    } else {
+      console.log(data);
+    }
+  };
 
   const handleResolve = async () => {
-    const data = await openIssue(props.data._id, props.userid);
+    if (feedback === "") {
+      alert("Please enter your response");
+      return;
+    }
+    const data = await resolveIssue(props.data._id, feedback);
     if (data.status === "ok") {
       props.closecard();
       props.update();
@@ -57,6 +73,8 @@ export default function IssueCard(props) {
         <CardHeader title={user.name} subheader={user.email} />
         <CardContent>
           <Typography variant="body2" color="text.secondary">
+            Issue No.: {props.data.issueNo}
+            <br />
             Title: {props.data.title}
             <br />
             Description: {props.data.description}
@@ -64,14 +82,38 @@ export default function IssueCard(props) {
             Status: {props.data.status}
             <br />
             Created On: {props.data.createdAt}
+            {props.data.status === "resolved" && (
+              <>
+                <br />
+                {"Resolved On: " + props.data.resolvedAt}
+                <br />
+                {"Feedback: " + props.data.feedback}
+              </>
+            )}
           </Typography>
-          {props.data.status === "open" && <Chat />}
+          <br />
+          {props.data.status !== "resolved" && (
+            <TextField
+              name="feedback"
+              id="feedback"
+              label="Enter Your Response"
+              value={feedback}
+              onChange={(e) => setFeedback(e.target.value)}
+              fullWidth
+              multiline
+            />
+          )}
         </CardContent>
         <CardActions sx={{ justifyContent: "space-around" }}>
           {props.data.status === "pending" && (
-            <IconButton aria-label="resolve" onClick={handleResolve}>
+            <IconButton aria-label="open" onClick={handleOpen}>
               <MarkEmailReadIcon />
             </IconButton>
+          )}
+          {props.data.status !== "resolved" && (
+            <Button aria-label="resolve" onClick={handleResolve}>
+              <PlaylistAddCheckCircleIcon />
+            </Button>
           )}
           <IconButton aria-label="close" onClick={props.closecard}>
             <CancelIcon />

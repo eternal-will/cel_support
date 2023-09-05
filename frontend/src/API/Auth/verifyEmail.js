@@ -1,7 +1,7 @@
 const verifyEmail = async (userId, otp) => {
   try {
     const response = await fetch(
-      "http://localhost:1377/api/user/verify-email",
+      `${process.env.REACT_APP_BACKEND_URL}/api/user/verify-email`,
       {
         method: "POST",
         headers: { "Content-Type": "application/json" },

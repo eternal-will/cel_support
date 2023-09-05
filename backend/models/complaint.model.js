@@ -12,6 +12,11 @@ const complaintSchema = mongoose.Schema(
       ref: "UserData",
       required: false,
     },
+    issueNo: {
+      type: Number,
+      required: true,
+      unique: true,
+    },
     title: {
       type: String,
       required: true,
@@ -27,6 +32,10 @@ const complaintSchema = mongoose.Schema(
     status: {
       type: String,
       default: "pending",
+    },
+    feedback: {
+      type: String,
+      required: false,
     },
     resolvedAt: {
       type: Date,

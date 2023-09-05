@@ -1,7 +1,7 @@
 const forgotPassword = async (email) => {
   try {
     const response = await fetch(
-      "http://localhost:1377/api/user/forgot-password",
+      `${process.env.REACT_APP_BACKEND_URL}/api/user/forgot-password`,
       {
         method: "POST",
         headers: { "Content-Type": "application/json" },

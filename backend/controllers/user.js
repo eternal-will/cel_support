@@ -1,5 +1,5 @@
 const jwt = require("jsonwebtoken");
-
+require("dotenv").config();
 const User = require("../models/user.model");
 const VerificationToken = require("../models/verificationToken.model");
 const ResetToken = require("../models/resetToken.model");
@@ -28,7 +28,7 @@ exports.createUser = async (req, res) => {
     await verificationToken.save();
 
     maitTransport().sendMail({
-      from: "otpverification@email.com",
+      from: process.env.MAIL_USER,
       to: user.email,
       subject: "Email Verification",
       html: `<h1>OTP: ${token}</h1>`,
@@ -60,13 +60,12 @@ exports.loginUser = async (req, res) => {
           isVerified: user.isVerified,
           createdAt: user.createdAt,
         },
-        "secretkey", //store it in .env file in actual projects
+        process.env.JSON_WEB_TOKEN_KEY, //store it in .env file in actual projects
         { expiresIn: "14d" }, //expires in 14 days
         (err, token) => {
           if (err) {
-            return res.json({ status: "error", error: err });
+            throw new Error("Error in generating login token!");
           }
-
           return res.json({
             status: "ok",
             token: token,
@@ -74,11 +73,7 @@ exports.loginUser = async (req, res) => {
         }
       );
     } else {
-      return res.json({
-        status: "error",
-        user: false,
-        error: "Invalid email / password",
-      });
+      throw new Error("Incorrect email/password!");
     }
   } catch (error) {
     return res.json({ status: "error", error: error.toString() });
@@ -102,7 +97,7 @@ exports.verifyEmail = async (req, res) => {
       await VerificationToken.findByIdAndDelete(token._id);
 
       maitTransport().sendMail({
-        from: "otpverification@email.com",
+        from: process.env.MAIL_USER,
         to: user.email,
         subject: "Email Verified",
         html: `<h1>Email succesfully verified!</h1>`,
@@ -110,7 +105,7 @@ exports.verifyEmail = async (req, res) => {
 
       return res.json({ status: "ok" });
     } else {
-      return res.json({ status: "error", error: "Invalid OTP" });
+      throw new Error("Incorrect OTP!");
     }
   } catch (error) {
     return res.json({ status: "error", error: error.toString() });
@@ -136,7 +131,7 @@ exports.resendOTP = async (req, res) => {
     await verificationToken.save();
 
     maitTransport().sendMail({
-      from: "otpverification@email.com",
+      from: process.env.MAIL_USER,
       to: user.email,
       subject: "Email Verification",
       html: `<h1>OTP: ${token}</h1>`,
@@ -168,10 +163,10 @@ exports.forgotPassword = async (req, res) => {
     const resetToken = new ResetToken({ owner: user._id, token: token });
     await resetToken.save();
 
-    resetUrl = `http://localhost:3000/reset-password?token=${token}&uid=${user._id}`;
+    resetUrl = `${process.env.FRONTEND_URL}/reset-password?token=${token}&uid=${user._id}`;
 
     maitTransport().sendMail({
-      from: "passwordreset@email.com",
+      from: process.env.MAIL_USER,
       to: user.email,
       subject: "Password Reset",
       html: `<a href="${resetUrl}">Click here to reset password</a>`,
@@ -202,7 +197,7 @@ exports.resetPassword = async (req, res) => {
     await ResetToken.findOneAndDelete({ owner: user._id });
 
     maitTransport().sendMail({
-      from: "passwordreset@email.com",
+      from: process.env.MAIL_USER,
       to: user.email,
       subject: "Password Reset Successful",
       html: "<h1>Password reset successful!</h1>",
